@@ -32,7 +32,16 @@ import Prelude hiding (lookup)
 -- 0
 
 assoc :: Int -> String -> [(String, Int)] -> Int
-assoc def key kvs = error "TBD:assoc"
+assoc def key kvs = 
+    let
+        -- Tail-recursive helper function with an accumulator parameter
+        assoc' :: Int -> String -> [(String, Int)] -> Int
+        assoc' acc _ [] = acc -- If the list is empty, return the accumulator value
+        assoc' acc key' ((k, v):kvs')
+            | k == key' = v -- If the key is found, return the associated value
+            | otherwise = assoc' acc key' kvs' -- Otherwise, continue searching in the rest of the list
+    in
+        assoc' def key kvs -- Call the helper function with the initial accumulator value (def)
 
 --------------------------------------------------------------------------------
 {- | `removeDuplicates ls`
@@ -58,8 +67,9 @@ removeDuplicates ls = reverse (helper [] ls)
     helper seen []     = seen
     helper seen (x:xs) = helper seen' rest'
       where
-        seen'          = error "TBD:helper:seen"
-        rest'          = error "TBD:helper:rest"
+        seen' | x `elem` seen = seen
+              | otherwise      = x:seen
+        rest' = xs
 
 --------------------------------------------------------------------------------
 {- | `wwhile f x` such that `wwhile f x` returns a value `x'` obtained from the repeated application of the input function `f`.
@@ -99,7 +109,14 @@ Thus, the final value will be `(false, <first value for which condition is no lo
 -- 512
 
 wwhile :: (a -> (Bool, a)) -> a -> a
-wwhile f x = error "TBD:wwhile"
+wwhile f x =
+  let
+    (condition, result) = f x
+  in
+    if condition
+    then wwhile f result
+    else result
+
 
 --------------------------------------------------------------------------------
 {- | The **fixpoint** of a function `f` starting at `x`
